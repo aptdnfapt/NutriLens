@@ -1908,22 +1908,23 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Prominent Send to AI button
+                    // Circular Send to AI button
                     Container(
+                      width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                            Colors.black87,
+                            Colors.black,
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                            color: Colors.black.withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -1931,40 +1932,25 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                       ),
                       child: Material(
                         color: Colors.transparent,
+                        shape: const CircleBorder(),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
+                          customBorder: const CircleBorder(),
                           onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (_loading && !_queueMode)
-                                  SizedBox(
+                          child: Center(
+                            child: _loading && !_queueMode
+                                ? const SizedBox(
                                     width: 20,
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).colorScheme.onPrimary,
-                                      ),
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     ),
                                   )
-                                else
-                                  Icon(
+                                : const Icon(
                                     Icons.send_rounded,
-                                    color: Theme.of(context).colorScheme.onPrimary,
+                                    color: Colors.white,
+                                    size: 24,
                                   ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  (_loading && !_queueMode) ? s.sending : s.sendToAI,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       ),
@@ -2007,7 +1993,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                             child: Column(
                               children: [
                                 Icon(
-                                  Icons.camera_alt_outlined,
+                                  Icons.photo_camera,
                                   size: 32,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -2039,7 +2025,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                             : Theme.of(context).colorScheme.primary.withOpacity(0.6),
                                           foregroundColor: canUseCamera
                                             ? null // Use default onPrimary color
-                                            : Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                                            : Colors.white,
                                           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                         ),
                                       ),
@@ -2109,7 +2095,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                             : Theme.of(context).colorScheme.secondary.withOpacity(0.6),
                                           foregroundColor: canUseCamera
                                             ? Theme.of(context).colorScheme.onSecondary
-                                            : Theme.of(context).colorScheme.onSecondary.withOpacity(0.7),
+                                            : Colors.white,
                                           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                         ),
                                       ),
