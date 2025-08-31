@@ -2022,20 +2022,29 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                 const SizedBox(height: 12),
                                 Column(
                                   children: [
-                                    if (canUseCamera) ...[
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: FilledButton.icon(
-                                          onPressed: _captureImage,
-                                          icon: const Icon(Icons.photo_camera_outlined, size: 18),
-                                          label: Text(s.takePhoto),
-                                          style: FilledButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                          ),
+                                    // Always show take photo button
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton.icon(
+                                        onPressed: canUseCamera ? _captureImage : () {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Camera not available in web mode')),
+                                          );
+                                        },
+                                        icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                                        label: Text(s.takePhoto),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: canUseCamera 
+                                            ? null // Use default primary color
+                                            : Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                          foregroundColor: canUseCamera
+                                            ? null // Use default onPrimary color
+                                            : Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
-                                    ],
+                                    ),
+                                    const SizedBox(height: 8),
                                     SizedBox(
                                       width: double.infinity,
                                       child: OutlinedButton.icon(
@@ -2083,22 +2092,29 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                 const SizedBox(height: 12),
                                 Column(
                                   children: [
-                                    if (canUseCamera) ...[
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: FilledButton.icon(
-                                          onPressed: _scanBarcode,
-                                          icon: const Icon(Icons.qr_code_scanner, size: 18),
-                                          label: Text(s.scanBarcode),
-                                          style: FilledButton.styleFrom(
-                                            backgroundColor: Theme.of(context).colorScheme.secondary,
-                                            foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                          ),
+                                    // Always show scan barcode button
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton.icon(
+                                        onPressed: canUseCamera ? _scanBarcode : () {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Barcode scanning not available in web mode')),
+                                          );
+                                        },
+                                        icon: const Icon(Icons.qr_code_scanner, size: 18),
+                                        label: Text(s.scanBarcode),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: canUseCamera 
+                                            ? Theme.of(context).colorScheme.secondary
+                                            : Theme.of(context).colorScheme.secondary.withOpacity(0.6),
+                                          foregroundColor: canUseCamera
+                                            ? Theme.of(context).colorScheme.onSecondary
+                                            : Theme.of(context).colorScheme.onSecondary.withOpacity(0.7),
+                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
-                                    ],
+                                    ),
+                                    const SizedBox(height: 8),
                                     SizedBox(
                                       width: double.infinity,
                                       child: OutlinedButton.icon(
