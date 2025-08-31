@@ -1993,15 +1993,11 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                               ),
                               boxShadow: [
+                                // Black shadow behind
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.8),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, -2),
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 6),
                                 ),
                               ],
                             ),
@@ -2075,15 +2071,11 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                               ),
                               boxShadow: [
+                                // Black shadow behind
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.8),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, -2),
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 6),
                                 ),
                               ],
                             ),
