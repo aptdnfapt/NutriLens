@@ -1447,6 +1447,9 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     return 'http://141.145.210.115:3007';
   }
 
+  // Check if camera is available on this platform
+  bool get canUseCamera => !kIsWeb && !(Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+
   // Build capture card widget
   Widget _buildCaptureCard() {
     final s = S.of(context);
@@ -2039,7 +2042,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
 
   Widget _buildMainTab() {
     final s = S.of(context);
-    final canUseCamera = !kIsWeb && !(Platform.isLinux || Platform.isWindows || Platform.isMacOS);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
