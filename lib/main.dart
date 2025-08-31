@@ -1447,6 +1447,172 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     return 'http://141.145.210.115:3007';
   }
 
+  // Build capture card widget
+  Widget _buildCaptureCard() {
+    final s = S.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        boxShadow: [
+          // Black shadow behind
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.photo_camera,
+            size: 32,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Capture',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Column(
+            children: [
+              // Always show take photo button
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: canUseCamera ? _captureImage : () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Camera not available in web mode')),
+                    );
+                  },
+                  icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                  label: Text(s.takePhoto),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: canUseCamera 
+                      ? null // Use default primary color
+                      : Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                    foregroundColor: canUseCamera
+                      ? null // Use default onPrimary color
+                      : Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _pickImage,
+                  icon: const Icon(Icons.image_outlined, size: 18),
+                  label: Text(s.pickImage),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build other actions card widget with smaller font for long text
+  Widget _buildOtherCard() {
+    final s = S.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+        boxShadow: [
+          // Black shadow behind
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.more_horiz,
+            size: 32,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Other',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Theme.of(context).colorScheme.secondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Column(
+            children: [
+              // Always show scan barcode button with smaller font
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: canUseCamera ? _scanBarcode : () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Barcode scanning not available in web mode')),
+                    );
+                  },
+                  icon: const Icon(Icons.qr_code_scanner, size: 16),
+                  label: Text(
+                    s.scanBarcode,
+                    style: const TextStyle(fontSize: 12), // Smaller font to prevent wrapping
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: canUseCamera 
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).colorScheme.secondary.withOpacity(0.6),
+                    foregroundColor: canUseCamera
+                      ? Theme.of(context).colorScheme.onSecondary
+                      : Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _addManualFood,
+                  icon: const Icon(Icons.add, size: 16),
+                  label: Text(
+                    s.addManual,
+                    style: const TextStyle(fontSize: 12), // Smaller font to prevent wrapping
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Theme.of(context).colorScheme.secondary),
+                    foregroundColor: Theme.of(context).colorScheme.secondary,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -1977,173 +2143,34 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 const SizedBox(height: 16),
-                // Enhanced action buttons with better organization
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Primary actions row
-                    Row(
-                      children: [
-                        // Image capture section
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                              ),
-                              boxShadow: [
-                                // Black shadow behind
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.photo_camera,
-                                  size: 32,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Capture',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Column(
-                                  children: [
-                                    // Always show take photo button
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: FilledButton.icon(
-                                        onPressed: canUseCamera ? _captureImage : () {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Camera not available in web mode')),
-                                          );
-                                        },
-                                        icon: const Icon(Icons.photo_camera_outlined, size: 18),
-                                        label: Text(s.takePhoto),
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor: canUseCamera 
-                                            ? null // Use default primary color
-                                            : Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                                          foregroundColor: canUseCamera
-                                            ? null // Use default onPrimary color
-                                            : Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: OutlinedButton.icon(
-                                        onPressed: _pickImage,
-                                        icon: const Icon(Icons.image_outlined, size: 18),
-                                        label: Text(s.pickImage),
-                                        style: OutlinedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Other actions section
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                              ),
-                              boxShadow: [
-                                // Black shadow behind
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.more_horiz,
-                                  size: 32,
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Other',
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.secondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Column(
-                                  children: [
-                                    // Always show scan barcode button
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: FilledButton.icon(
-                                        onPressed: canUseCamera ? _scanBarcode : () {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('Barcode scanning not available in web mode')),
-                                          );
-                                        },
-                                        icon: const Icon(Icons.qr_code_scanner, size: 18),
-                                        label: Text(s.scanBarcode),
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor: canUseCamera 
-                                            ? Theme.of(context).colorScheme.secondary
-                                            : Theme.of(context).colorScheme.secondary.withOpacity(0.6),
-                                          foregroundColor: canUseCamera
-                                            ? Theme.of(context).colorScheme.onSecondary
-                                            : Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: OutlinedButton.icon(
-                                        onPressed: _addManualFood,
-                                        icon: const Icon(Icons.add, size: 18),
-                                        label: Text(s.addManual),
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(color: Theme.of(context).colorScheme.secondary),
-                                          foregroundColor: Theme.of(context).colorScheme.secondary,
-                                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                // Enhanced action buttons with responsive layout
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Check if we have enough width for side-by-side layout
+                    final isWideEnough = constraints.maxWidth > 400;
+                    
+                    if (isWideEnough) {
+                      // Side-by-side layout for wider screens
+                      return Row(
+                        children: [
+                          // Image capture section
+                          Expanded(child: _buildCaptureCard()),
+                          const SizedBox(width: 12),
+                          // Other actions section
+                          Expanded(child: _buildOtherCard()),
+                        ],
+                      );
+                    } else {
+                      // Vertical stack for narrow screens
+                      return Column(
+                        children: [
+                          _buildCaptureCard(),
+                          const SizedBox(height: 12),
+                          _buildOtherCard(),
+                        ],
+                      );
+                    }
+                  },
                 ),
                 if (_image != null) ...[
                   const SizedBox(height: 12),
