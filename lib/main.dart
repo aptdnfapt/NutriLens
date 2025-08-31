@@ -1908,10 +1908,12 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Circular Send to AI button
-                    Container(
-                      width: 56,
-                      height: 56,
+                    // Circular Send to AI button - aligned with bottom of text field
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Container(
+                        width: 56,
+                        height: 56,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
@@ -1955,6 +1957,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                         ),
                       ),
                     ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -1989,6 +1992,18 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                               border: Border.all(
                                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.8),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, -2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               children: [
@@ -2059,6 +2074,18 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                               border: Border.all(
                                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.8),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, -2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               children: [
