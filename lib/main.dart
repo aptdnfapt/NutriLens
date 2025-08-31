@@ -1946,32 +1946,33 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                               ),
                             ],
                           ),
-                      child: Material(
-                        color: Colors.transparent,
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
-                          child: Center(
-                            child: _loading && !_queueMode
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.send_rounded,
-                                    color: Colors.white,
-                                    size: 24,
-                                  ),
-                          ),
-                        ),
-                      ),
-                        ),
-                    ),
+                         child: Material(
+                           color: Colors.transparent,
+                           shape: const CircleBorder(),
+                           child: InkWell(
+                             customBorder: const CircleBorder(),
+                             onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
+                             child: Center(
+                               child: _loading && !_queueMode
+                                   ? const SizedBox(
+                                       width: 20,
+                                       height: 20,
+                                       child: CircularProgressIndicator(
+                                         strokeWidth: 2,
+                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                       ),
+                                     )
+                                   : const Icon(
+                                       Icons.send_rounded,
+                                       color: Colors.white,
+                                       size: 24,
+                                     ),
+                             ),
+                           ),
+                         ),
+                       ),
+                     ),
+                   ),
                   ],
                 ),
                 const SizedBox(height: 16),
