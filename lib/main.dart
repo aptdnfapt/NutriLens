@@ -1915,64 +1915,42 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF8A2BE2), // Blue violet
-                              Color(0xFF9932CC), // Dark orchid
-                              Color(0xFF6A0DAD), // Purple
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
+                            child: Center(
+                              child: _loading && !_queueMode
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.send_rounded,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                            ),
                           ),
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.all(2), // Border thickness
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Colors.black87,
-                                Colors.black,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                         child: Material(
-                           color: Colors.transparent,
-                           shape: const CircleBorder(),
-                           child: InkWell(
-                             customBorder: const CircleBorder(),
-                             onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
-                             child: Center(
-                               child: _loading && !_queueMode
-                                   ? const SizedBox(
-                                       width: 20,
-                                       height: 20,
-                                       child: CircularProgressIndicator(
-                                         strokeWidth: 2,
-                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                       ),
-                                     )
-                                   : const Icon(
-                                       Icons.send_rounded,
-                                       color: Colors.white,
-                                       size: 24,
-                                     ),
-                             ),
-                           ),
-                         ),
-                       ),
-                     ),
-                   ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
