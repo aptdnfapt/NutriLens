@@ -154,6 +154,150 @@ void main() async {
   runApp(const RootApp());
 }
 
+// Custom theme transition widget for smooth, slow fade animation
+class ThemeTransitionWrapper extends StatefulWidget {
+  final Widget child;
+  final ThemeData lightTheme;
+  final ThemeData darkTheme;
+  
+  const ThemeTransitionWrapper({
+    super.key,
+    required this.child,
+    required this.lightTheme,
+    required this.darkTheme,
+  });
+
+  @override
+  State<ThemeTransitionWrapper> createState() => _ThemeTransitionWrapperState();
+}
+
+class _ThemeTransitionWrapperState extends State<ThemeTransitionWrapper>
+    with TickerProviderStateMixin {
+  static _ThemeTransitionWrapperState? _instance;
+
+  static void triggerTransitionFromPoint(Offset point) {
+    _instance?._startThemeTransition(point);
+  }
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  ThemeMode? _previousThemeMode;
+  Offset? _transitionCenter;
+
+  @override
+  void initState() {
+    super.initState();
+    _instance = this;
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500), // Much slower, comfortable fade
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOutCubic, // Smooth, natural curve
+    );
+    _previousThemeMode = appSettings.themeMode;
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    if (_instance == this) _instance = null;
+    super.dispose();
+  }
+
+  void _startThemeTransition(Offset center) {
+    _transitionCenter = center;
+    _animationController.forward(from: 0.0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: appSettings,
+      builder: (context, child) {
+        // Check if theme mode changed
+        if (_previousThemeMode != appSettings.themeMode) {
+          _previousThemeMode = appSettings.themeMode;
+          // Start transition from center of screen if no specific point provided
+          _startThemeTransition(_transitionCenter ?? Offset(
+            MediaQuery.of(context).size.width / 2,
+            MediaQuery.of(context).size.height / 2,
+          ));
+        }
+
+        return AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return Stack(
+              children: [
+                widget.child,
+                if (_animation.value > 0.0 && _animation.value < 1.0)
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: ThemeTransitionPainter(
+                        progress: _animation.value,
+                        center: _transitionCenter ?? Offset(
+                          MediaQuery.of(context).size.width / 2,
+                          MediaQuery.of(context).size.height / 2,
+                        ),
+                        newTheme: _getCurrentTheme(context),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  ThemeData _getCurrentTheme(BuildContext context) {
+    switch (appSettings.themeMode) {
+      case ThemeMode.dark:
+        return widget.darkTheme;
+      case ThemeMode.light:
+        return widget.lightTheme;
+      case ThemeMode.system:
+        return MediaQuery.of(context).platformBrightness == Brightness.dark
+            ? widget.darkTheme
+            : widget.lightTheme;
+    }
+  }
+}
+
+// Custom painter for the theme transition effect
+class ThemeTransitionPainter extends CustomPainter {
+  final double progress;
+  final Offset center;
+  final ThemeData newTheme;
+
+  ThemeTransitionPainter({
+    required this.progress,
+    required this.center,
+    required this.newTheme,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0.0) return;
+
+    final paint = Paint()
+      ..color = newTheme.scaffoldBackgroundColor.withOpacity(progress * 0.9)
+      ..style = PaintingStyle.fill;
+
+    // Calculate radius for circular reveal effect
+    final maxRadius = (size.width + size.height) * 0.7;
+    final currentRadius = maxRadius * progress;
+
+    // Draw expanding circle from the center point
+    canvas.drawCircle(center, currentRadius, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
 class RootApp extends StatelessWidget {
   const RootApp({super.key});
 
@@ -215,34 +359,22 @@ class RootApp extends StatelessWidget {
           ),
         );
 
-        return AnimatedBuilder(
-          animation: appSettings,
-          builder: (context, _) => AnimatedTheme(
-            duration: const Duration(milliseconds: 800), // Smooth, comfortable transition
-            curve: Curves.easeInOut, // Natural easing curve
-            data: appSettings.themeMode == ThemeMode.dark 
-                ? darkTheme 
-                : appSettings.themeMode == ThemeMode.light 
-                    ? lightTheme 
-                    : MediaQuery.of(context).platformBrightness == Brightness.dark 
-                        ? darkTheme 
-                        : lightTheme,
-            child: Builder(
-              builder: (context) => MaterialApp(
-                onGenerateTitle: (ctx) => S.of(ctx).appTitle,
-                theme: lightTheme,
-                darkTheme: darkTheme,
-                themeMode: appSettings.themeMode,
-                locale: appSettings.locale,
-                supportedLocales: const [Locale('en'), Locale('fr')],
-                localizationsDelegates: [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                home: const AuthGate(),
-              ),
-            ),
+        return ThemeTransitionWrapper(
+          lightTheme: lightTheme,
+          darkTheme: darkTheme,
+          child: MaterialApp(
+            onGenerateTitle: (ctx) => S.of(ctx).appTitle,
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: appSettings.themeMode,
+            locale: appSettings.locale,
+            supportedLocales: const [Locale('en'), Locale('fr')],
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: const AuthGate(),
           ),
         );
       },
@@ -1787,35 +1919,56 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 ),
                 const Divider(),
                 ListTile(title: Text(s.theme, style: Theme.of(ctx).textTheme.titleMedium)),
-                RadioListTile<ThemeMode>(
-                  value: ThemeMode.system,
-                  groupValue: appSettings.themeMode,
-                  title: Text(s.systemTheme),
-                  onChanged: (value) {
-                    if (value != null) {
-                      appSettings.setThemeMode(value);
+                GestureDetector(
+                  onTapDown: (details) {
+                    if (appSettings.themeMode != ThemeMode.system) {
+                      _ThemeTransitionWrapperState.triggerTransitionFromPoint(details.globalPosition);
                     }
                   },
+                  child: RadioListTile<ThemeMode>(
+                    value: ThemeMode.system,
+                    groupValue: appSettings.themeMode,
+                    title: Text(s.systemTheme),
+                    onChanged: (value) {
+                      if (value != null) {
+                        appSettings.setThemeMode(value);
+                      }
+                    },
+                  ),
                 ),
-                RadioListTile<ThemeMode>(
-                  value: ThemeMode.light,
-                  groupValue: appSettings.themeMode,
-                  title: Text(s.lightTheme),
-                  onChanged: (value) {
-                    if (value != null) {
-                      appSettings.setThemeMode(value);
+                GestureDetector(
+                  onTapDown: (details) {
+                    if (appSettings.themeMode != ThemeMode.light) {
+                      _ThemeTransitionWrapperState.triggerTransitionFromPoint(details.globalPosition);
                     }
                   },
+                  child: RadioListTile<ThemeMode>(
+                    value: ThemeMode.light,
+                    groupValue: appSettings.themeMode,
+                    title: Text(s.lightTheme),
+                    onChanged: (value) {
+                      if (value != null) {
+                        appSettings.setThemeMode(value);
+                      }
+                    },
+                  ),
                 ),
-                RadioListTile<ThemeMode>(
-                  value: ThemeMode.dark,
-                  groupValue: appSettings.themeMode,
-                  title: Text(s.darkTheme),
-                  onChanged: (value) {
-                    if (value != null) {
-                      appSettings.setThemeMode(value);
+                GestureDetector(
+                  onTapDown: (details) {
+                    if (appSettings.themeMode != ThemeMode.dark) {
+                      _ThemeTransitionWrapperState.triggerTransitionFromPoint(details.globalPosition);
                     }
                   },
+                  child: RadioListTile<ThemeMode>(
+                    value: ThemeMode.dark,
+                    groupValue: appSettings.themeMode,
+                    title: Text(s.darkTheme),
+                    onChanged: (value) {
+                      if (value != null) {
+                        appSettings.setThemeMode(value);
+                      }
+                    },
+                  ),
                 ),
                 const Divider(),
                 SwitchListTile(
