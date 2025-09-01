@@ -217,19 +217,32 @@ class RootApp extends StatelessWidget {
 
         return AnimatedBuilder(
           animation: appSettings,
-          builder: (context, _) => MaterialApp(
-            onGenerateTitle: (ctx) => S.of(ctx).appTitle,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: appSettings.themeMode,
-            locale: appSettings.locale,
-            supportedLocales: const [Locale('en'), Locale('fr')],
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            home: const AuthGate(),
+          builder: (context, _) => AnimatedTheme(
+            duration: const Duration(milliseconds: 800), // Smooth, comfortable transition
+            curve: Curves.easeInOut, // Natural easing curve
+            data: appSettings.themeMode == ThemeMode.dark 
+                ? darkTheme 
+                : appSettings.themeMode == ThemeMode.light 
+                    ? lightTheme 
+                    : MediaQuery.of(context).platformBrightness == Brightness.dark 
+                        ? darkTheme 
+                        : lightTheme,
+            child: Builder(
+              builder: (context) => MaterialApp(
+                onGenerateTitle: (ctx) => S.of(ctx).appTitle,
+                theme: lightTheme,
+                darkTheme: darkTheme,
+                themeMode: appSettings.themeMode,
+                locale: appSettings.locale,
+                supportedLocales: const [Locale('en'), Locale('fr')],
+                localizationsDelegates: [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                home: const AuthGate(),
+              ),
+            ),
           ),
         );
       },
@@ -1781,7 +1794,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                   onChanged: (value) {
                     if (value != null) {
                       appSettings.setThemeMode(value);
-                      Navigator.pop(ctx);
                     }
                   },
                 ),
@@ -1792,7 +1804,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                   onChanged: (value) {
                     if (value != null) {
                       appSettings.setThemeMode(value);
-                      Navigator.pop(ctx);
                     }
                   },
                 ),
@@ -1803,7 +1814,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                   onChanged: (value) {
                     if (value != null) {
                       appSettings.setThemeMode(value);
-                      Navigator.pop(ctx);
                     }
                   },
                 ),
