@@ -2738,6 +2738,35 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                     ),
                   ],
                 ),
+                // Image thumbnail preview right under text input
+                if (_image != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: _buildImageWidget(_image!, width: 60, height: 60, fit: BoxFit.cover),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Image selected',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => setState(() => _image = null),
+                        icon: Icon(
+                          Icons.close,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        tooltip: 'Remove image',
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 16),
                 CheckboxListTile(
                   value: _queueMode,
@@ -2782,13 +2811,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                     }
                   },
                 ),
-                if (_image != null) ...[
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: _buildImageWidget(_image!, height: 200, fit: BoxFit.cover),
-                  ),
-                ],
+
               ],
             ),
           ),
