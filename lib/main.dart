@@ -2730,7 +2730,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
               subtitle: const Text('Enter nutrition information manually'),
               onTap: () {
                 Navigator.pop(context);
-                _addManually();
+                _addManualFood();
               },
             ),
             const SizedBox(height: 10),
