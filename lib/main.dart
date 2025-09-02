@@ -2697,6 +2697,49 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     );
   }
 
+  // Show manual add menu
+  void _showManualAddMenu() {
+    final s = S.of(context);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Add Manually',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
+              title: const Text('Add meal manually'),
+              subtitle: const Text('Enter nutrition information manually'),
+              onTap: () {
+                Navigator.pop(context);
+                _addManually();
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMainTab() {
     final s = S.of(context);
     final scheme = Theme.of(context).colorScheme;
@@ -2763,23 +2806,74 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Modern input field with floating design
+                  // Modern input field with integrated send button
                   Container(
                     decoration: BoxDecoration(
                       color: scheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(28),
                       border: Border.all(color: scheme.outline.withOpacity(0.2)),
                     ),
-                    child: TextField(
-                      controller: _controller,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        labelText: s.describeMeal,
-                        hintText: s.describeMealHint,
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.all(16),
-                        labelStyle: TextStyle(color: scheme.primary),
-                      ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _controller,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              labelText: s.describeMeal,
+                              hintText: s.describeMealHint,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                              labelStyle: TextStyle(color: scheme.primary),
+                            ),
+                          ),
+                        ),
+                        // Send button inside text field
+                        Container(
+                          margin: const EdgeInsets.all(4),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [scheme.primary, scheme.primary.withOpacity(0.8)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: scheme.primary.withOpacity(0.4),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            shape: const CircleBorder(),
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
+                              child: Center(
+                                child: _loading && !_queueMode
+                                    ? SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.send_rounded,
+                                        color: scheme.onPrimary,
+                                        size: 18,
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
@@ -2868,46 +2962,25 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Send button
+                      // Three-dot menu for manual adding
                       Container(
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [scheme.primary, scheme.primary.withOpacity(0.8)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: scheme.surfaceContainerHigh,
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: scheme.primary.withOpacity(0.4),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                          border: Border.all(color: scheme.outline.withOpacity(0.2)),
                         ),
                         child: Material(
                           color: Colors.transparent,
                           shape: const CircleBorder(),
                           child: InkWell(
                             customBorder: const CircleBorder(),
-                            onTap: (_loading && !_queueMode) ? null : _sendOrQueue,
-                            child: Center(
-                              child: _loading && !_queueMode
-                                  ? SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(scheme.onPrimary),
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.send_rounded,
-                                      color: scheme.onPrimary,
-                                      size: 24,
-                                    ),
+                            onTap: () => _showManualAddMenu(),
+                            child: Icon(
+                              Icons.more_vert,
+                              color: scheme.onSurfaceVariant,
+                              size: 24,
                             ),
                           ),
                         ),
