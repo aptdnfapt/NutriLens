@@ -1507,8 +1507,11 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           if (jobId == null) {
             _tabController.animateTo(0);
           }
-          Future.delayed(const Duration(milliseconds: 200), () {
-            if (mounted) _showMealDetails(newMeal);
+          // Try immediate popup call for Android compatibility
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _showMealDetails(newMeal);
+            }
           });
         }
         
@@ -1724,8 +1727,11 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
             if (jobId == null) {
               _tabController.animateTo(0);
             }
-            Future.delayed(const Duration(milliseconds: 200), () {
-              if (mounted) _showMealDetails(newMeal);
+            // Try immediate popup call for Android compatibility
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                _showMealDetails(newMeal);
+              }
             });
           }
           
@@ -3581,8 +3587,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       // Only switch to history tab and show popup in normal mode
       if (!_mealBuilderActive) {
         _tabController.animateTo(0);
-        Future.delayed(const Duration(milliseconds: 200), () {
-          if (mounted) _showMealDetails(newMeal);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _showMealDetails(newMeal);
+          }
         });
       }
 
