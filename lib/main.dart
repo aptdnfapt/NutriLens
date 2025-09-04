@@ -1724,12 +1724,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           }
           _addNotification('Result saved${jobId != null ? ' (#$jobId)' : ''}');
           
-          // Only show meal details popup in normal mode
-          if (!_mealBuilderActive) {
-            Future.delayed(const Duration(milliseconds: 200), () {
-              if (mounted) _showMealDetails(newMeal);
-            });
-          }
         }
 
         // Try to sync to Health Connect (Android) when available
@@ -1795,6 +1789,13 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           }
         } catch (e) {
           if (mounted) setState(() => _healthLastError = e.toString());
+        }
+
+        // Show meal details popup in normal mode after all processing is complete
+        if (mounted && !_mealBuilderActive) {
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (mounted) _showMealDetails(newMeal);
+          });
         }
       } else {
         // Try to show a friendly server-provided error first
