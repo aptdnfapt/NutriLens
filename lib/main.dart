@@ -1461,6 +1461,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       };
       
       setState(() {
+        _resultText = const JsonEncoder.withIndent('  ').convert(localizedStructured);
         if (jobId != null) {
           final idx = _queue.indexWhere((j) => j['id'] == jobId);
           if (idx >= 0) _queue.removeAt(idx);
@@ -1475,9 +1476,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           _history.add(newMeal);
           _pruneHistory();
         }
-        
-        // Clear result text since we don't show it on main page anymore
-        _resultText = '';
       });
       
       if (!_mealBuilderActive) {
@@ -1507,12 +1505,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           if (jobId == null) {
             _tabController.animateTo(0);
           }
-          // Try immediate popup call for Android compatibility
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              _showMealDetails(newMeal);
-            }
-          });
+          // Direct popup call - no delays or callbacks
+          if (mounted) {
+            _showMealDetails(newMeal);
+          }
         }
         
         _addNotification('Mock result saved${jobId != null ? ' (#$jobId)' : ''}');
@@ -1680,6 +1676,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           'hcWritten': false,
         };
         setState(() {
+          _resultText = pretty;
           if (jobId != null) {
             final idx = _queue.indexWhere((j) => j['id'] == jobId);
             if (idx >= 0) _queue.removeAt(idx);
@@ -1694,9 +1691,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
             _history.add(newMeal);
             _pruneHistory();
           }
-          
-          // Clear result text since we don't show it on main page anymore
-          _resultText = '';
         });
         
         if (!_mealBuilderActive) {
