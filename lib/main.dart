@@ -1500,19 +1500,19 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
             _image = null;
             _controller.clear();
           });
-          // Only switch to history tab in normal mode
-          if (!_mealBuilderActive) {
+        }
+        
+        // Only switch to history tab and show popup in normal mode
+        if (!_mealBuilderActive) {
+          if (jobId == null) {
             _tabController.animateTo(0);
           }
-        }
-        _addNotification('Mock result saved${jobId != null ? ' (#$jobId)' : ''}');
-        
-        // Only show meal details popup in normal mode
-        if (!_mealBuilderActive) {
           Future.delayed(const Duration(milliseconds: 200), () {
             if (mounted) _showMealDetails(newMeal);
           });
         }
+        
+        _addNotification('Mock result saved${jobId != null ? ' (#$jobId)' : ''}');
       }
       return;
     }
@@ -1717,19 +1717,19 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
               _image = null;
               _controller.clear();
             });
-            // Only switch to history tab in normal mode
-            if (!_mealBuilderActive) {
+          }
+          
+          // Only switch to history tab and show popup in normal mode
+          if (!_mealBuilderActive) {
+            if (jobId == null) {
               _tabController.animateTo(0);
             }
-          }
-          _addNotification('Result saved${jobId != null ? ' (#$jobId)' : ''}');
-          
-          // Only show meal details popup in normal mode
-          if (!_mealBuilderActive) {
             Future.delayed(const Duration(milliseconds: 200), () {
               if (mounted) _showMealDetails(newMeal);
             });
           }
+          
+          _addNotification('Result saved${jobId != null ? ' (#$jobId)' : ''}');
         }
 
         // Try to sync to Health Connect (Android) when available
