@@ -1721,12 +1721,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
             if (jobId == null) {
               _tabController.animateTo(0);
             }
-            // Try immediate popup call for Android compatibility
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                _showMealDetails(newMeal);
-              }
-            });
+            // Direct popup call - consistent with mock mode behavior
+            if (mounted) {
+              _showMealDetails(newMeal);
+            }
           }
           
           _addNotification('Result saved${jobId != null ? ' (#$jobId)' : ''}');
