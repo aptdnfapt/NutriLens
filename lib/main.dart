@@ -4235,6 +4235,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: _buildImageWidget(
+                                          context,
                                           imgPath,
                                           width: 48,
                                           height: 48,
