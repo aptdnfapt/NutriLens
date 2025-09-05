@@ -3338,15 +3338,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 borderRadius: BorderRadius.circular(8),
                 child: _buildImageWidget(result['image'], width: 48, height: 48, fit: BoxFit.cover),
               )
-            : Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(Icons.fastfood, color: scheme.onPrimaryContainer),
-              ),
+            : null, // Hide leading widget when no image exists
           title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
           subtitle: Text(
             '${kcal ?? 0} kcal${grams != null ? ' • ${grams}g' : ''}',

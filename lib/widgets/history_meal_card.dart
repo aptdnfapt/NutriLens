@@ -33,18 +33,11 @@ class _HistoryMealCard extends StatelessWidget {
                 height: 72,
                 fit: BoxFit.cover,
               ),
-            )
-          else
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: scheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.fastfood, color: scheme.onSurfaceVariant),
             ),
-          const SizedBox(width: 12),
+          if (meal['image'] != null || (meal['imagePath'] is String && (meal['imagePath'] as String).isNotEmpty))
+            const SizedBox(width: 12)
+          else
+            const SizedBox(width: 0),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
