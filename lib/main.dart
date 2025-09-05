@@ -3195,6 +3195,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
               final status = job['status']?.toString() ?? 'pending';
               final isProcessing = status == 'in_progress';
               final hasError = status == 'error';
+              final imgPath = job['imagePath'] as String?;
               
               return Container(
                 width: 60,
@@ -3214,14 +3215,25 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Background icon
-                    Icon(
-                      hasError ? Icons.error : Icons.fastfood,
-                      color: hasError 
-                        ? scheme.onErrorContainer 
-                        : scheme.onPrimaryContainer,
-                      size: 24,
-                    ),
+                    // Show actual image if exists, otherwise show icon
+                    if (imgPath != null && imgPath.isNotEmpty)
+                      ClipOval(
+                        child: _buildImageWidget(
+                          imgPath,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    else
+                      // Background icon
+                      Icon(
+                        hasError ? Icons.error : Icons.fastfood,
+                        color: hasError 
+                          ? scheme.onErrorContainer 
+                          : scheme.onPrimaryContainer,
+                        size: 24,
+                      ),
                     // Loading animation overlay
                     if (isProcessing)
                       SizedBox(
