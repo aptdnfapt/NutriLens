@@ -648,42 +648,22 @@ Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, Bo
                   fit: fit ?? BoxFit.cover,
                 );
               } catch (e) {
-                // Handle image decoding errors
-                return Container(
-                  width: width,
-                  height: height,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.broken_image),
-                );
+                // Handle image decoding errors - show nothing instead of grey blob
+                return const SizedBox.shrink();
               }
             } else {
-              // Failed to read bytes
-              return Container(
-                width: width,
-                height: height,
-                color: Colors.grey[300],
-                child: const Icon(Icons.image_not_supported),
-              );
+              // Failed to read bytes - show nothing instead of grey blob
+              return const SizedBox.shrink();
             }
           } else {
-            // Still loading
-            return Container(
-              width: width,
-              height: height,
-              color: Colors.grey[300],
-              child: const Icon(Icons.image),
-            );
+            // Still loading - show nothing instead of grey blob
+            return const SizedBox.shrink();
           }
         },
       );
     } else if (imageSource is String) {
-      // For file paths on web, we can't access them directly
-      return Container(
-        width: width,
-        height: height,
-        color: Colors.grey[300],
-        child: const Icon(Icons.image_not_supported),
-      );
+      // For file paths on web, we can't access them directly - show nothing instead of grey blob
+      return const SizedBox.shrink();
     }
   } else {
     // On mobile platforms, use Image.file as normal with error handling
@@ -703,33 +683,19 @@ Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, Bo
           height: height,
           fit: fit ?? BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            // Handle image loading errors
-            return Container(
-              width: width,
-              height: height,
-              color: Colors.grey[300],
-              child: const Icon(Icons.broken_image),
-            );
+            // Handle image loading errors - show nothing instead of grey blob
+            return const SizedBox.shrink();
           },
         );
       } else {
-        // File doesn't exist
-        return Container(
-          width: width,
-          height: height,
-          color: Colors.grey[300],
-          child: const Icon(Icons.image_not_supported),
-        );
+        // File doesn't exist - show nothing instead of grey blob
+        return const SizedBox.shrink();
       }
     }
   }
   
-  return Container(
-    width: width,
-    height: height,
-    color: Colors.grey[300],
-    child: const Icon(Icons.image),
-  );
+  // No image source - show nothing instead of grey blob
+  return const SizedBox.shrink();
 }
 
 // Moved _image and _controller to the class level to ensure state persistence
@@ -3350,7 +3316,15 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 borderRadius: BorderRadius.circular(8),
                 child: _buildImageWidget(result['image'], width: 48, height: 48, fit: BoxFit.cover),
               )
-            : null, // Hide leading widget when no image exists
+            : Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.fastfood, color: scheme.onPrimaryContainer),
+              ),
           title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
           subtitle: Text(
             '${kcal ?? 0} kcal${grams != null ? ' • ${grams}g' : ''}',
