@@ -1153,6 +1153,49 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     await prefs.setString('history_json', json.encode(serializable));
   }
 
+  // Remove a specific meal from persistent storage to prevent duplicates
+  Future<void> _removeMealFromPersistentStorage(Map<String, dynamic> mealToRemove) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('history_json');
+    if (raw == null || raw.isEmpty) return;
+    
+    try {
+      final List history = json.decode(raw);
+      if (history is List) {
+        // Find and remove the specific meal by comparing time values
+        final mealTime = mealToRemove['time'];
+        String? mealTimeString;
+        if (mealTime is DateTime) {
+          mealTimeString = mealTime.toIso8601String();
+        } else if (mealTime is String) {
+          mealTimeString = mealTime;
+        }
+        
+        if (mealTimeString != null) {
+          // Remove the meal from the history list
+          history.removeWhere((item) {
+            if (item is Map) {
+              final itemTime = item['time'];
+              if (itemTime is String) {
+                return itemTime == mealTimeString;
+              } else if (itemTime is DateTime) {
+                return itemTime.toIso8601String() == mealTimeString;
+              }
+            }
+            return false;
+          });
+          
+          // Save the updated history back to SharedPreferences
+          await prefs.setString('history_json', json.encode(history));
+        }
+      }
+    } catch (e) {
+      // Ignore errors in case of malformed data
+      // debugPrint not available, using regular print for debugging
+      // print('Error removing meal from persistent storage: $e');
+    }
+  }
+
   // Queue & notifications UI
   void _addNotification(String msg) {
     setState(() {
@@ -4260,7 +4303,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                             // Remove the original meal from history since it's now in the builder
                             _history.remove(meal);
                           });
-                          await _saveHistory();
+                          
+                          // Also remove the meal from persistent storage to prevent duplicates
+                          await _removeMealFromPersistentStorage(meal);
+                          
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Meal builder activated - add more items!')));
                             Navigator.pop(ctx);
