@@ -28,6 +28,7 @@ class _HistoryMealCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: _buildImageWidget(
+                context,
                 meal['image'] != null ? meal['image'] : (meal['imagePath'] as String),
                 width: 72,
                 height: 72,

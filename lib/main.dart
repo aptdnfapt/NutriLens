@@ -632,13 +632,13 @@ class MainScreen extends StatefulWidget {
 
 // Helper function to create web-compatible image widgets with error handling
 // showIcon parameter determines whether to show an icon when no image is available
-Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, BoxFit? fit, bool showIcon = true}) {
+Widget _buildImageWidget(BuildContext context, dynamic imageSource, {double? width, double? height, BoxFit? fit, bool showIcon = true}) {
   if (kIsWeb) {
     // On web, use Image.network for XFile or Image.memory for bytes
     if (imageSource is XFile) {
       return FutureBuilder<Uint8List>(
         future: imageSource.readAsBytes(),
-        builder: (context, snapshot) {
+        builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData && snapshot.data != null) {
               try {
@@ -731,7 +731,7 @@ Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, Bo
           width: width,
           height: height,
           fit: fit ?? BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
+          errorBuilder: (ctx, error, stackTrace) {
             // Handle image loading errors - show icon instead of grey blob if requested
             if (showIcon) {
               return Container(
@@ -1360,7 +1360,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                       leading: img != null && img.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: _buildImageWidget(img, width: 40, height: 40, fit: BoxFit.cover),
+                              child: _buildImageWidget(context, img, width: 40, height: 40, fit: BoxFit.cover),
                             )
                           : const Icon(Icons.image_not_supported),
                               title: Text(desc?.isNotEmpty == true ? desc! : S.of(context).noDescription),
@@ -3268,6 +3268,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                     if (imgPath != null && imgPath.isNotEmpty)
                       ClipOval(
                         child: _buildImageWidget(
+                          context,
                           imgPath,
                           width: 60,
                           height: 60,
@@ -3397,7 +3398,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           leading: result['image'] != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: _buildImageWidget(result['image'], width: 48, height: 48, fit: BoxFit.cover),
+                child: _buildImageWidget(context, result['image'], width: 48, height: 48, fit: BoxFit.cover),
               )
             : Container(
                 width: 48,
@@ -3608,7 +3609,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: _buildImageWidget(_image!, width: 50, height: 50, fit: BoxFit.cover),
+                                child: _buildImageWidget(context, _image!, width: 50, height: 50, fit: BoxFit.cover),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -4190,7 +4191,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 if (meal['image'] != null || meal['imagePath'] != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: _buildImageWidget(meal['image'] ?? meal['imagePath'], height: 220, fit: BoxFit.cover, showIcon: false),
+                    child: _buildImageWidget(context, meal['image'] ?? meal['imagePath'], height: 220, fit: BoxFit.cover, showIcon: false),
                   ),
                 const SizedBox(height: 8),
                 if (meal['description'] != null)
