@@ -631,7 +631,8 @@ class MainScreen extends StatefulWidget {
 }
 
 // Helper function to create web-compatible image widgets with error handling
-Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, BoxFit? fit}) {
+// showIcon parameter determines whether to show an icon when no image is available
+Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, BoxFit? fit, bool showIcon = true}) {
   if (kIsWeb) {
     // On web, use Image.network for XFile or Image.memory for bytes
     if (imageSource is XFile) {
@@ -648,22 +649,70 @@ Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, Bo
                   fit: fit ?? BoxFit.cover,
                 );
               } catch (e) {
-                // Handle image decoding errors - show nothing instead of grey blob
-                return const SizedBox.shrink();
+                // Handle image decoding errors - show icon instead of grey blob if requested
+                if (showIcon) {
+                  return Container(
+                    width: width,
+                    height: height,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(Icons.fastfood, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
               }
             } else {
-              // Failed to read bytes - show nothing instead of grey blob
-              return const SizedBox.shrink();
+              // Failed to read bytes - show icon instead of grey blob if requested
+              if (showIcon) {
+                return Container(
+                  width: width,
+                  height: height,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.fastfood, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
             }
           } else {
-            // Still loading - show nothing instead of grey blob
-            return const SizedBox.shrink();
+            // Still loading - show icon instead of grey blob if requested
+            if (showIcon) {
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.image, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
           }
         },
       );
     } else if (imageSource is String) {
-      // For file paths on web, we can't access them directly - show nothing instead of grey blob
-      return const SizedBox.shrink();
+      // For file paths on web, we can't access them directly - show icon instead of grey blob if requested
+      if (showIcon) {
+        return Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
     }
   } else {
     // On mobile platforms, use Image.file as normal with error handling
@@ -683,19 +732,55 @@ Widget _buildImageWidget(dynamic imageSource, {double? width, double? height, Bo
           height: height,
           fit: fit ?? BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            // Handle image loading errors - show nothing instead of grey blob
-            return const SizedBox.shrink();
+            // Handle image loading errors - show icon instead of grey blob if requested
+            if (showIcon) {
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.broken_image, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
           },
         );
       } else {
-        // File doesn't exist - show nothing instead of grey blob
-        return const SizedBox.shrink();
+        // File doesn't exist - show icon instead of grey blob if requested
+        if (showIcon) {
+          return Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
       }
     }
   }
   
-  // No image source - show nothing instead of grey blob
-  return const SizedBox.shrink();
+  // No image source - show icon instead of grey blob if requested
+  if (showIcon) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(Icons.fastfood, color: Theme.of(context).colorScheme.onSurfaceVariant),
+    );
+  } else {
+    return const SizedBox.shrink();
+  }
 }
 
 // Moved _image and _controller to the class level to ensure state persistence
@@ -3168,9 +3253,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: hasError 
-                    ? scheme.errorContainer 
-                    : scheme.primaryContainer,
+                  color: Colors.transparent,
                   border: Border.all(
                     color: hasError 
                       ? scheme.error 
@@ -3196,8 +3279,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                       Icon(
                         hasError ? Icons.error : Icons.fastfood,
                         color: hasError 
-                          ? scheme.onErrorContainer 
-                          : scheme.onPrimaryContainer,
+                          ? scheme.error
+                          : scheme.primary,
                         size: 24,
                       ),
                     // Loading animation overlay
@@ -4107,7 +4190,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 if (meal['image'] != null || meal['imagePath'] != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: _buildImageWidget(meal['image'] ?? meal['imagePath'], height: 220, fit: BoxFit.cover),
+                    child: _buildImageWidget(meal['image'] ?? meal['imagePath'], height: 220, fit: BoxFit.cover, showIcon: false),
                   ),
                 const SizedBox(height: 8),
                 if (meal['description'] != null)
